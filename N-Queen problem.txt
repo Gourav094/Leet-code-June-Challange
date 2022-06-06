@@ -1,0 +1,74 @@
+Here is the explaination of the code given below:-
+SOLVEQUEENS ->
+
+we initalise our board as (nxn) board consisting of all '.'
+we call our placeQueen fn with request that yes we want to place our first Queen at 1st (0th index) row. The placeQueen will check for its feasibility , and if feasible will place the queen there and move forward to next row.
+
+PLACEQUEEN -> (It places queen in board based on feasibility(constraints))
+
+If we had already filled all the rows, then we got one of the answer, and we save our board position to our answer array
+otherwise for that particular row, we iterate in all the columns to look for safe cells where we can place our queen
+If a particular board pos is safe as returned by our isSafe function, then if we can place our queen in that cell and again look for placing our queen in next row.
+After getting all possible combination from that particular column position of queen in that row, we bactrack and move our queen to rext col within same row to get other combinations.
+And if it isn't safe we backtrack to move our queen to next col within same row.
+
+IS-SAFE -> (returns boolean value if a particuar position in board is safe or not from attacks)
+
+As soon as we are placing a queen in a row, we move to next row, so there can't be two queens in same row anyhow. So we don't need to check for queens in the same row
+
+we check if for a particular column (for which we are checking for safety), is there already any queen on any row in same column . If yes this cell isn't safe.
+
+we check for both the diagonals for safety also (commented).
+
+
+
+
+class Solution {
+    vector<vector<string>> ans;
+public:
+    bool isSafe(vector<string> &board, int row, int col){
+        //column check
+        for(int i = 0; i<board.size(); ++i){
+            if(board[i][col] == 'Q'){return false;}
+        }
+        int x = row; int y = col;
+		
+        //checking for upper left diagonal(non-main diagonal), row is decreasing and col too
+        while(x>=0 && y>=0){
+            if(board[x][y] == 'Q'){return false;}
+            --x;  --y; 
+        }
+        
+         //checking for main diagonal(upper right), row is decreasing and col increasing
+        while(row>=0 && col<board.size()){
+            if(board[row][col] == 'Q'){return false;}
+            --row; ++col;
+        }
+        
+        //The fn didn't returned false till , implies that our position is safe to place the queen
+        return true;
+    }
+    
+    void placeQueen(vector<string> &board, int row){
+        if(row == board.size()){
+            ans.push_back(board);
+            return;
+        }
+        
+        for(int col = 0; col<board.size() ; ++col){
+            if(isSafe(board, row, col)){
+                board[row][col] = 'Q';
+                placeQueen(board, row+1);
+                board[row][col] = '.';
+            }   
+        }
+    }
+    
+    
+    vector<vector<string>> solveNQueens(int n) {            
+            //Initialise board with all '.'
+            vector<string> board(n, string(n, '.'));
+            placeQueen(board, 0); 
+            return ans;
+    }
+};
